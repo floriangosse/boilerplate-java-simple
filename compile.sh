@@ -12,12 +12,19 @@ source config.cfg
 [ -d $BIN_DIR ] || mkdir -p $BIN_DIR
 
 # Detect all libs
-LIBS=$(find $LIB_DIR -maxdepth 1 -iname "*.jar" )
+LIBS=""
+if [[ -d $LIB_DIR ]]; then
+    LIBS=$(find $LIB_DIR -maxdepth 1 -iname "*.jar")
+fi
 # Detect all java files
 FILES=$(find $SRC_DIR -type f -iname "*.java" | paste -sd ' ' -)
 
-# Build classpath
-CLASSPATH=$(echo "$LIBS" | paste -sd ':' -)
+# Initialize classpath
+CLASSPATH="$BIN_DIR"
+if [[ "x$LIBS" != "x" ]]; then
+    # Add libs to classpath
+    CLASSPATH="$(echo "${LIBS}" | paste -sd ':' -):$CLASSPATH"
+fi
 
 echo "Start compiling"
 
